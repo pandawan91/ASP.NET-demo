@@ -1,4 +1,8 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Diagnostics.Metrics;
+using ASP.NET_demo.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
@@ -15,6 +19,15 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+
+using (var serviceScope = app.Services.CreateScope())
+{
+    var services = serviceScope.ServiceProvider;
+
+    var context = services.GetService<ApiContext>()
+        ?? throw new Exception("Can't Find ApiContext");
+    context.Database.Migrate();
 }
 
 app.UseAuthorization();

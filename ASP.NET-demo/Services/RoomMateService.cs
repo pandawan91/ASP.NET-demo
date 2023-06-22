@@ -1,5 +1,5 @@
 ﻿using System;
-using ASP.NET_demo.Context;
+using ASP.NET_demo.DatabaseContext;
 using ASP.NET_demo.Models;
 using ASP.NET_demo.ViewModels;
 using AutoMapper;

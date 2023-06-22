@@ -2,7 +2,7 @@
 using ASP.NET_demo.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ASP.NET_demo.Context
+namespace ASP.NET_demo.DatabaseContext
 {
 	public class ApiContext : DbContext
 	{

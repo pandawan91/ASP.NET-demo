@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.Json.Serialization;
+
 namespace ASP.NET_demo.Models
 {
 	public class ScheduledTaskModel
@@ -8,10 +10,12 @@ namespace ASP.NET_demo.Models
 		public bool Done { get; set; }
 
 		public string TaskId { get; set; }
+		[JsonIgnore]
 		public TaskModel Task { get; set; }
 
 		public string RoomMateId { get; set; }
-		public RoomMateModel RoomMate { get; set; }
+        [JsonIgnore]
+        public RoomMateModel RoomMate { get; set; }
 	}
 }
 
