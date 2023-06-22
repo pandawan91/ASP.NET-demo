@@ -58,10 +58,7 @@ namespace ASP.NET_demo.Services
 
             var roomMate = await _apiContext.RoomMates.FindAsync(model.Id)
                 ?? throw new KeyNotFoundException(nameof(model));
-
-			roomMate.Name = model.Name;
-
-            _apiContext.RoomMates.Update(roomMate);
+            _apiContext.RoomMates.Update(_mapper.Map<RoomMateModel>(model));
 
             await _apiContext.SaveChangesAsync();
         }
@@ -78,8 +75,6 @@ namespace ASP.NET_demo.Services
 
 			await _apiContext.SaveChangesAsync();
 		}
-
-
 	}
 }
 
