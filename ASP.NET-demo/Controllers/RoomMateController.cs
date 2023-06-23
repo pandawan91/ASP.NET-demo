@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using ASP.NET_demo.DatabaseContext;
+using ASP.NET_demo.Models;
 using ASP.NET_demo.Services;
 using ASP.NET_demo.ViewModels;
 using AutoMapper;
@@ -74,9 +75,9 @@ namespace ASP.NET_demo.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody]RoomMateViewModel model)
+        // PUT api/values
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]RoomMateViewModel model)
         {
             if (model == null)
                 return BadRequest("model is invalid");

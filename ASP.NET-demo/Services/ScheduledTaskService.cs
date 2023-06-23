@@ -4,6 +4,7 @@ using ASP.NET_demo.DatabaseContext;
 using ASP.NET_demo.Models;
 using ASP.NET_demo.ViewModels;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ASP.NET_demo.Services
@@ -31,6 +32,58 @@ namespace ASP.NET_demo.Services
             await _apiContext.SaveChangesAsync();
         }
 
+        public List<ScheduledTaskViewModel> GetThisWeekSchedule()
+        {
+            DateTimeFormatInfo dfi = DateTimeFormatInfo.CurrentInfo;
+            Calendar cal = dfi.Calendar;
+            var actualWeek = cal
+                .GetWeekOfYear(
+                    DateTime.Now,
+                    dfi.CalendarWeekRule,
+                    dfi.FirstDayOfWeek
+            );
+
+            var scheduledTasks = _apiContext
+                .ScheduledTasks
+                .Where(x => x.Week == actualWeek)
+                .Select(x => _mapper.Map<ScheduledTaskViewModel>(x))
+                .ToList();
+
+            var unassignedTasks = _apiContext
+                .Tasks
+                .Where(x => x.IsRepeatable
+                    && _apiContext.ScheduledTasks.Where(y => y.TaskId == x.Id).Count() <= 0
+                )
+                .Select(x => new ScheduledTaskViewModel
+                {
+                    Week = actualWeek,
+                    Done = false,
+                    TaskName = x.Name
+                }).ToList();
+
+            scheduledTasks.AddRange(unassignedTasks);
+
+            return scheduledTasks;
+        }
+
+        public List<ScheduledTaskViewModel> GetWeekScheduleForPlanning(int week)
+        {
+            if (week <= 0 && week > 53)
+                throw new ArgumentOutOfRangeException(nameof(week));
+
+            return _apiContext
+                .Tasks
+                .Where(x => x.IsRepeatable
+                    && _apiContext.ScheduledTasks.Where(y => y.TaskId == x.Id).Count() <= 0
+                )
+                .Select(x => new ScheduledTaskViewModel
+                {
+                    Week = week,
+                    Done = false,
+                    TaskName = x.Name
+                }).ToList();
+        }
+
         public async Task<ScheduledTaskViewModel> FindScheduledTaskAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -44,11 +97,13 @@ namespace ASP.NET_demo.Services
 
         public List<ScheduledTaskViewModel> FindAllScheduledTasksByWeek(int week)
         {
-            if (week <= 0)
+            if (week <= 0 && week > 53)
                 throw new ArgumentOutOfRangeException(nameof(week));
 
             return _apiContext
                 .ScheduledTasks
+                .Include(scheduledTask => scheduledTask.Task)
+                .Include(scheduledTask => scheduledTask.RoomMate)
                 .Where(x => x.Week == week)
                 .Select(x => _mapper.Map<ScheduledTaskViewModel>(x))
                 .ToList();
@@ -70,6 +125,8 @@ namespace ASP.NET_demo.Services
 
             return _apiContext
                 .ScheduledTasks
+                .Include(scheduledTask => scheduledTask.Task)
+                .Include(scheduledTask => scheduledTask.RoomMate)
                 .Where(x => x.Week == actualWeek && x.RoomMateId == id)
                 .Select(x => _mapper.Map<ScheduledTaskViewModel>(x))
                 .ToList();
@@ -79,6 +136,8 @@ namespace ASP.NET_demo.Services
         {
             return _apiContext
                 .ScheduledTasks
+                .Include(scheduledTask => scheduledTask.Task)
+                .Include(scheduledTask => scheduledTask.RoomMate)
                 .Select(x => _mapper.Map<ScheduledTaskViewModel>(x))
                 .ToList();
         }
@@ -103,6 +162,7 @@ namespace ASP.NET_demo.Services
 
             var scheduledTask = await _apiContext.ScheduledTasks.FindAsync(model.Id)
                 ?? throw new KeyNotFoundException(nameof(model));
+            _mapper.Map(model, scheduledTask);
             _apiContext.ScheduledTasks.Update(model);
 
             await _apiContext.SaveChangesAsync();

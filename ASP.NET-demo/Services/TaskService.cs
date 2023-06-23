@@ -19,15 +19,12 @@ namespace ASP.NET_demo.Services
                 ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task CreateTaskAsync(string name)
+        public async Task CreateTaskAsync(TaskModel model)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException(nameof(name));
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
 
-            await _apiContext.Tasks.AddAsync(new TaskModel()
-            {
-                Name = name
-            });
+            await _apiContext.Tasks.AddAsync(model);
 
             await _apiContext.SaveChangesAsync();
         }
@@ -58,7 +55,8 @@ namespace ASP.NET_demo.Services
 
             var task = await _apiContext.Tasks.FindAsync(model.Id)
                 ?? throw new KeyNotFoundException(nameof(model));
-            _apiContext.Tasks.Update(_mapper.Map<TaskModel>(model));
+            _mapper.Map(model, task);
+            _apiContext.Tasks.Update(task);
 
             await _apiContext.SaveChangesAsync();
         }

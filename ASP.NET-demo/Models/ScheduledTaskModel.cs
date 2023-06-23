@@ -8,7 +8,7 @@ namespace ASP.NET_demo.Models
 	public class ScheduledTaskModel
 	{
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
+        [Key, JsonIgnore]
         public string Id { get; set; }
 		public int Week { get; set; }
         [JsonIgnore]
@@ -17,8 +17,8 @@ namespace ASP.NET_demo.Models
 		public string TaskId { get; set; }
 		[JsonIgnore]
 		public TaskModel Task { get; set; }
-
-		public string RoomMateId { get; set; }
+        [Required(AllowEmptyStrings = true)]
+        public string RoomMateId { get; set; }
         [JsonIgnore]
         public RoomMateModel RoomMate { get; set; }
 	}

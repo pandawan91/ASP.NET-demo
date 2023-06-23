@@ -79,12 +79,45 @@ namespace ASP.NET_demo.Controllers
         [Route("GetScheduledTasksByWeek")]
         public IActionResult GetScheduledTasksByWeek(int week)
         {
-            if (week <= 0)
+            if (week <= 0 && week > 53)
                 return BadRequest("week is invalid");
 
             try
             {
                 return Ok(_scheduledTaskService.FindAllScheduledTasksByWeek(week));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // Get api/values
+        [HttpGet]
+        [Route("GetUnassignedWeekSchedule")]
+        public IActionResult GetUnassignedWeekSchedule(int week)
+        {
+            if (week <= 0 && week > 53)
+                return BadRequest("week is invalid");
+
+            try
+            {
+                return Ok(_scheduledTaskService.GetWeekScheduleForPlanning(week));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        // Get api/values
+        [HttpGet]
+        [Route("GetThisWeekSchedule")]
+        public IActionResult GetThisWeekSchedule()
+        {
+            try
+            {
+                return Ok(_scheduledTaskService.GetThisWeekSchedule());
             }
             catch (Exception ex)
             {
@@ -110,9 +143,9 @@ namespace ASP.NET_demo.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] ScheduledTaskModel model)
+        // PUT api/values
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] ScheduledTaskModel model)
         {
             if (model == null)
                 return BadRequest("model is invalid");

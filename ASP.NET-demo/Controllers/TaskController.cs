@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ASP.NET_demo.DatabaseContext;
+using ASP.NET_demo.Models;
 using ASP.NET_demo.Services;
 using ASP.NET_demo.ViewModels;
 using AutoMapper;
@@ -57,14 +58,14 @@ namespace ASP.NET_demo.Controllers
 
         // POST api/values
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] string name)
+        public async Task<IActionResult> PostAsync([FromBody] TaskModel model)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (model == null)
                 return BadRequest("name is invalid");
 
             try
             {
-                await _taskService.CreateTaskAsync(name);
+                await _taskService.CreateTaskAsync(model);
                 return Ok();
             }
             catch (Exception ex)
@@ -73,9 +74,9 @@ namespace ASP.NET_demo.Controllers
             }
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(string id, [FromBody] TaskViewModel model)
+        // PUT api/values
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] TaskViewModel model)
         {
             if (model == null)
                 return BadRequest("model is invalid");
