@@ -83,6 +83,19 @@ namespace ASP.NET_demo.Services
                 .ToList();
         }
 
+        public async Task FinishedScheduledTaskAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentNullException(nameof(id));
+
+            var scheduledTask = await _apiContext.ScheduledTasks.FindAsync(id)
+                ?? throw new KeyNotFoundException(nameof(id));
+            scheduledTask.Done = true;
+            _apiContext.ScheduledTasks.Update(scheduledTask);
+
+            await _apiContext.SaveChangesAsync();
+        }
+
         public async Task UpdateScheduledTaskAsync(ScheduledTaskModel model)
         {
             if (model == null)

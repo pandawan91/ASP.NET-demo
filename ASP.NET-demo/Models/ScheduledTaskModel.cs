@@ -1,13 +1,18 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ASP.NET_demo.Models
 {
 	public class ScheduledTaskModel
 	{
-		public string Id { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [Key]
+        public string Id { get; set; }
 		public int Week { get; set; }
-		public bool Done { get; set; }
+        [JsonIgnore]
+        public bool Done { get; set; }
 
 		public string TaskId { get; set; }
 		[JsonIgnore]

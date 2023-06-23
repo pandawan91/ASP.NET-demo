@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Metrics;
 using ASP.NET_demo.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddDbContext<ApiContext>(options =>
+{
+    // connect to postgres
+    string connectionString = String.Format("Host={0};Database={1};Username={2};Password={3}",
+        builder.Configuration.GetValue<string>("POSTGRES_HOST"),
+        builder.Configuration.GetValue<string>("POSTGRES_DB"),
+        builder.Configuration.GetValue<string>("POSTGRES_USER"),
+        builder.Configuration.GetValue<string>("POSTGRES_PASSWORD"));
+    options.UseNpgsql(connectionString);
+});
 
 var app = builder.Build();
 
