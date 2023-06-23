@@ -11,6 +11,8 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
+    ports:
+      - "8000:80"
     networks:
       - web
     labels:
@@ -27,6 +29,8 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
       - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - web
     volumes:
       - db-data:/var/lib/postgresql/data/pgdata
     labels:
